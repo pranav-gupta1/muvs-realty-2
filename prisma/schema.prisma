@@ -1,0 +1,358 @@
+// ─────────────────────────────────────────────────────────────────────────────
+//  MUVS Realty — data model
+//
+//  Local dev runs on SQLite, which supports neither native enums nor scalar
+//  list columns. Two conventions handle that, and both are designed so the swap
+//  to Postgres is mechanical (see "Migrating to Postgres" in README.md):
+//
+//   1. ENUMS are stored as `String`. Every allowed value lives in
+//      src/lib/taxonomy.ts. The `/// @taxonomy(Name)` annotations below are
+//      verified against that module by `npm run check:taxonomy`, which runs as
+//      part of `npm run typecheck` — so the schema, the zod validators, the
+//      filter UIs and the admin forms cannot drift apart.
+//
+//   2. ARRAYS AND OBJECTS are stored as JSON `String` columns, marked
+//      `/// @json` below. They are only ever read or written through the typed
+//      helpers in src/lib/json.ts — never parsed inline.
+// ─────────────────────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // Postgres swap: change to `provider = "postgresql"` and point DATABASE_URL
+  // at the new database. No column types below are SQLite-specific.
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ── Projects ────────────────────────────────────────────────────────────────
+// Developments MUVS actively markets. A project with status = PRE_LAUNCH is
+// what /pre-launch renders; there is deliberately no separate Pre-Launch model,
+// so changing the status moves a project between /projects and /pre-launch.
+
+model Project {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  title       String
+  developer   String
+  /// @taxonomy(ProjectType) RESIDENTIAL_APARTMENT | PLOTTED_DEVELOPMENT | VILLA_TOWNSHIP | COMMERCIAL | INDUSTRIAL | MIXED_USE
+  projectType String
+  /// @taxonomy(ProjectStatus) PRE_LAUNCH | NEW_LAUNCH | UNDER_CONSTRUCTION | READY_TO_MOVE
+  status      String
+  /// @taxonomy(PropertyLocation) NOIDA | GREATER_NOIDA | YAMUNA_EXPRESSWAY | DELHI | GHAZIABAD | OTHER
+  location    String
+  sector      String?
+  address     String?
+
+  // Rupees. Nullable because pre-launch pricing is often "on request".
+  priceMin Float?
+  priceMax Float?
+
+  areaMin  Float?
+  areaMax  Float?
+  /// @taxonomy(AreaUnit) SQFT | SQYD | ACRE | BIGHA | SQM
+  areaUnit String @default("SQFT")
+
+  possessionDate DateTime?
+  reraNumber     String?
+
+  /// Rich text stored as sanitised HTML.
+  description String @default("")
+
+  /// @json string[]
+  highlights     String @default("[]")
+  /// @json string[]
+  amenities      String @default("[]")
+  /// @json Array<{ type: string; area: number; areaUnit: string; price: number | null }>
+  configurations String @default("[]")
+  /// @json Array<{ title: string; imageUrl: string }>
+  floorPlans     String @default("[]")
+  /// @json string[] — YouTube video IDs
+  videoIds       String @default("[]")
+
+  brochureUrl String?
+  mapEmbedUrl String?
+
+  // Pre-launch specific. Ignored for other statuses.
+  expectedLaunch String?
+  startingPrice  Float?
+  earlyBirdNote  String?
+  /// When true, full details + brochure require an OTP-verified lead.
+  isGated        Boolean @default(false)
+
+  isFeatured  Boolean @default(false)
+  isPublished Boolean @default(true)
+
+  images Image[]
+  leads  Lead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, isPublished])
+  @@index([location, isPublished])
+  @@index([isFeatured, isPublished])
+}
+
+// ── Inventory (resale listings) ─────────────────────────────────────────────
+
+model Inventory {
+  id              String  @id @default(cuid())
+  slug            String  @unique
+  title           String
+  /// @taxonomy(PropertyType) APARTMENT | PLOT | VILLA | AGRICULTURAL | INDUSTRIAL | COMMERCIAL
+  propertyType    String
+  /// @taxonomy(TransactionType) RESALE | NEW
+  transactionType String  @default("RESALE")
+  /// @taxonomy(PropertyLocation) NOIDA | GREATER_NOIDA | YAMUNA_EXPRESSWAY | DELHI | GHAZIABAD | OTHER
+  location        String
+  sector          String?
+  address         String?
+
+  /// Total asking price in rupees.
+  price           Float
+  priceNegotiable Boolean @default(false)
+
+  area         Float
+  /// @taxonomy(AreaUnit) SQFT | SQYD | ACRE | BIGHA | SQM
+  areaUnit     String
+  /// Derived: price / area, in the listing's own areaUnit. Written by
+  /// src/lib/inventory.ts on every create/update so it stays sortable in SQL.
+  pricePerUnit Float?
+
+  /// Derived: `area` normalised to square feet. Listings are quoted in sq.yd.,
+  /// acres or bigha depending on the type, so the area range filter and the
+  /// "largest first" sort would otherwise compare unlike units. Also written by
+  /// src/lib/inventory.ts.
+  areaSqft Float?
+
+  description String @default("")
+
+  /// @taxonomy(Ownership) FREEHOLD | LEASEHOLD | POWER_OF_ATTORNEY
+  ownership String?
+  /// @taxonomy(Facing) NORTH | SOUTH | EAST | WEST | NORTH_EAST | NORTH_WEST | SOUTH_EAST | SOUTH_WEST
+  facing    String?
+
+  /// @json Array<{ name: string; distance: string }>
+  nearbyLandmarks String @default("[]")
+
+  /// @json Type-specific fields, discriminated by `propertyType`. The shape for
+  /// each type is defined and validated in src/lib/inventory-details.ts.
+  details String @default("{}")
+
+  isFeatured  Boolean @default(false)
+  isPublished Boolean @default(true)
+  isSold      Boolean @default(false)
+
+  images Image[]
+  leads  Lead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyType, isPublished, isSold])
+  @@index([location, isPublished, isSold])
+  @@index([price])
+  @@index([areaSqft])
+}
+
+// ── Images ──────────────────────────────────────────────────────────────────
+// One table for both parents; exactly one of projectId / inventoryId is set.
+// `url` is whatever the storage adapter returned (src/lib/storage.ts), so it is
+// a /uploads/... path locally and an absolute CDN URL once S3/Cloudinary is on.
+
+model Image {
+  id        String  @id @default(cuid())
+  url       String
+  alt       String  @default("")
+  sortOrder Int     @default(0)
+  isPrimary Boolean @default(false)
+
+  projectId   String?
+  project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  inventoryId String?
+  inventory   Inventory? @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([projectId, sortOrder])
+  @@index([inventoryId, sortOrder])
+}
+
+// ── Leads ───────────────────────────────────────────────────────────────────
+
+model Lead {
+  id    String  @id @default(cuid())
+  name  String
+  /// Always E.164, e.g. +919810202834. Formatted for display at render time.
+  phone String
+  email String?
+
+  /// @taxonomy(InterestType) APARTMENT | PLOT | VILLA | AGRICULTURAL | INDUSTRIAL | COMMERCIAL | PRE_LAUNCH_PROJECT | NOT_SURE
+  propertyTypeInterest String?
+  /// @taxonomy(BudgetRange) UNDER_50L | 50L_1CR | 1CR_2CR | 2CR_5CR | 5CR_10CR | ABOVE_10CR
+  budgetRange          String?
+  /// @taxonomy(PropertyLocation) NOIDA | GREATER_NOIDA | YAMUNA_EXPRESSWAY | DELHI | GHAZIABAD | OTHER
+  preferredLocation    String?
+
+  requirements String?
+
+  /// Page path the lead came from, e.g. "/inventory/3bhk-sector-150-noida".
+  source String @default("/")
+
+  /// Denormalised so the admin table and emails stay readable even if the
+  /// underlying listing is later deleted or unpublished.
+  relatedType  String?
+  relatedTitle String?
+
+  relatedProjectId   String?
+  relatedProject     Project?   @relation(fields: [relatedProjectId], references: [id], onDelete: SetNull)
+  relatedInventoryId String?
+  relatedInventory   Inventory? @relation(fields: [relatedInventoryId], references: [id], onDelete: SetNull)
+
+  /// Only ever true when the server matched a consumed OTP challenge to this
+  /// exact phone number. Never set from client input.
+  phoneVerified Boolean @default(false)
+
+  /// @taxonomy(LeadStatus) NEW | CONTACTED | QUALIFIED | CLOSED | LOST
+  status String @default("NEW")
+  notes  String @default("")
+
+  ip        String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([phone])
+}
+
+// ── Phone verification ──────────────────────────────────────────────────────
+
+model OtpChallenge {
+  id       String @id @default(cuid())
+  /// E.164.
+  phone    String
+  /// HMAC-SHA256 of the code, keyed by OTP_HASH_SECRET. The plaintext code is
+  /// never written to the database or to any log outside dev mode.
+  codeHash String
+
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(5)
+  consumed    Boolean   @default(false)
+  consumedAt  DateTime?
+  expiresAt   DateTime
+
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([phone, createdAt])
+  @@index([expiresAt])
+}
+
+// ── Content ─────────────────────────────────────────────────────────────────
+
+model Certification {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  title       String
+  issuingBody String
+  year        Int
+  number      String?
+  imageUrl    String
+  description String  @default("")
+  sortOrder   Int     @default(0)
+  isPublished Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Video {
+  id          String  @id @default(cuid())
+  /// YouTube video ID only (never a file). Poster is derived from it.
+  youtubeId   String  @unique
+  title       String
+  description String  @default("")
+  /// @taxonomy(VideoCategory) PROPERTY_TOUR | SITE_VISIT | CLIENT_TESTIMONIAL | MARKET_UPDATE
+  category    String
+  sortOrder   Int     @default(0)
+  isPublished Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category, isPublished])
+}
+
+model Testimonial {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  role        String  @default("")
+  location    String  @default("")
+  quote       String
+  rating      Int     @default(5)
+  imageUrl    String?
+  sortOrder   Int     @default(0)
+  isPublished Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Singleton row, always id = "default". Everything an editor can change
+/// without a deploy: contact details, socials, hero copy, director bio, stats.
+model SiteSettings {
+  id String @id @default("default")
+
+  companyName String @default("MUVS Realty")
+  tagline     String @default("")
+
+  phone       String @default("")
+  whatsapp    String @default("")
+  email       String @default("")
+  address     String @default("")
+  officeHours String @default("")
+  reraNumber  String @default("")
+
+  instagram String @default("")
+  facebook  String @default("")
+  linkedin  String @default("")
+  youtube   String @default("")
+
+  heroTitle    String @default("")
+  heroSubtitle String @default("")
+  heroImageUrl String @default("")
+
+  directorName        String @default("")
+  directorDesignation String @default("")
+  directorBio         String @default("")
+  directorQuote       String @default("")
+  directorImageUrl    String @default("")
+  directorCredentials String @default("[]") /// @json string[]
+
+  aboutStory   String @default("")
+  aboutMission String @default("")
+
+  mapEmbedUrl String @default("")
+
+  statYears      Int @default(0)
+  statProperties Int @default(0)
+  statCities     Int @default(0)
+  statClients    Int @default(0)
+
+  updatedAt DateTime @updatedAt
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String   @default("")
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

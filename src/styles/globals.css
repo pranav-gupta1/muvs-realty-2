@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Brand palette — space-separated RGB channels so Tailwind opacity works. */
+    --maroon-900: 74 10 20; /* #4A0A14 */
+    --maroon-700: 122 18 32; /* #7A1220 */
+    --maroon-500: 163 30 48; /* #A31E30 */
+    --gold-500: 201 162 39; /* #C9A227 */
+    --gold-200: 232 217 160; /* #E8D9A0 */
+    --cream-50: 250 247 242; /* #FAF7F2 */
+    --ink-900: 26 26 26; /* #1A1A1A */
+    --ink-500: 107 107 107; /* #6B6B6B */
+
+    /* Thin gold hairline used for dividers and card borders. */
+    --hairline: 226 216 196;
+
+    --header-height: 4.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-cream-50 text-ink-900 font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-serif font-semibold text-maroon-900;
+    letter-spacing: -0.01em;
+  }
+
+  /* Prices, areas and counters: aligned digits. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-gold-500 ring-offset-2 ring-offset-cream-50;
+  }
+
+  ::selection {
+    @apply bg-gold-200 text-maroon-900;
+  }
+}
+
+@layer components {
+  /* Thin gold hairline divider. */
+  .hairline {
+    @apply h-px w-full border-0 bg-gradient-to-r from-transparent via-gold-500/45 to-transparent;
+  }
+
+  .eyebrow {
+    @apply text-xs font-medium uppercase tracking-[0.18em] text-gold-500;
+  }
+
+  .prose-brand {
+    @apply text-[15px] leading-[1.75] text-ink-900/85;
+  }
+
+  .prose-brand p + p {
+    @apply mt-4;
+  }
+
+  .prose-brand ul {
+    @apply mt-4 list-disc space-y-2 pl-5 marker:text-gold-500;
+  }
+
+  .prose-brand h3 {
+    @apply mt-8 text-lg;
+  }
+
+  .prose-brand strong {
+    @apply font-semibold text-maroon-900;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Every animation in the app is decorative — honour the OS setting globally. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
