@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import { hashPassword } from '../src/lib/auth'
 import { deriveInventoryFields } from '../src/lib/inventory'
 import { AMENITY_SETS, PHOTOS, img, mapEmbed } from './seed-data'
+import { SAMPLE_STATS } from '../src/lib/sample-content'
 
 const prisma = new PrismaClient()
 
@@ -131,10 +132,9 @@ async function seedSettings(brochureUrl: string) {
 
     mapEmbedUrl: mapEmbed('Sector 18, Noida, Uttar Pradesh'),
 
-    statYears: 12,
-    statProperties: 480,
-    statCities: 6,
-    statClients: 1200,
+    // TODO(content): sample figures. Tracked by src/lib/sample-content.ts and
+    // flagged on the admin dashboard until the owner supplies the real ones.
+    ...SAMPLE_STATS,
   }
 
   await prisma.siteSettings.upsert({
@@ -1282,6 +1282,9 @@ async function seedInventory() {
 /* ── certifications ─────────────────────────────────────────────────────── */
 
 async function seedCertifications() {
+  // TODO(content): every certification below except the RERA registration is a
+  // sample claim. They must be confirmed by the owner or deleted before launch.
+  // Tracked by src/lib/sample-content.ts.
   const seeds = [
     {
       slug: 'up-rera-agent-registration',
@@ -1412,6 +1415,7 @@ async function seedVideos() {
 /* ── testimonials ───────────────────────────────────────────────────────── */
 
 async function seedTestimonials() {
+  // TODO(content): written for the demo, not real clients.
   const seeds = [
     {
       slug: 'rajeev-menon',

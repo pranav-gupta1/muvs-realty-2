@@ -8,6 +8,7 @@ import { formatDateTime } from '@/lib/format'
 import { formatPhoneForDisplay } from '@/lib/phone'
 import { LeadStatus } from '@/lib/taxonomy'
 import { env } from '@/lib/env'
+import { getSampleContent } from '@/lib/sample-content'
 import { AdminPageHeader } from '@/components/admin/page-header'
 import { Badge } from '@/components/ui/badge'
 
@@ -38,6 +39,9 @@ export default async function AdminDashboard() {
       prisma.inventory.count(),
       prisma.lead.findMany({ orderBy: { createdAt: 'desc' }, take: 8 }),
     ])
+
+  const sample = await getSampleContent()
+  const sampleClaims = sample.filter((group) => group.isClaim)
 
   const unfilled = PLACEHOLDER_FIELDS.filter(([key]) =>
     isPlaceholder(settings[key as keyof typeof settings] as string),
@@ -81,6 +85,50 @@ export default async function AdminDashboard() {
             Fill them in under Site Settings
             <ArrowUpRight className="size-3.5" />
           </Link>
+        </div>
+      ) : null}
+
+      {sample.length > 0 ? (
+        <div className="mb-8 rounded border border-maroon-900/15 bg-white p-5">
+          <p className="text-[13.5px] font-semibold text-maroon-900">
+            Sample content still on the site
+          </p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-ink-900/75">
+            The site was built with stand-in content so it looks complete.{' '}
+            {sampleClaims.length > 0 ? (
+              <>
+                <strong className="font-semibold text-maroon-900">
+                  Some of it states things about the business that are not true yet
+                </strong>{' '}
+                and must be replaced or deleted before the site goes live.
+              </>
+            ) : (
+              'Replace it as the real material comes in.'
+            )}
+          </p>
+
+          <ul className="mt-4 space-y-2.5">
+            {sample.map((group) => (
+              <li
+                key={group.key}
+                className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1 border-t border-maroon-900/8 pt-2.5 text-[13px]"
+              >
+                <Link
+                  href={group.href}
+                  className="font-medium text-maroon-700 hover:underline"
+                >
+                  {group.label}
+                </Link>
+                {group.count !== null ? (
+                  <span className="tabular text-ink-500">{group.count}</span>
+                ) : null}
+                {group.isClaim ? <Badge variant="outline">Do not publish as is</Badge> : null}
+                <span className="w-full text-[12.5px] leading-relaxed text-ink-500">
+                  {group.note}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       ) : null}
 
