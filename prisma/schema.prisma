@@ -271,6 +271,8 @@ model TeamMember {
   credentials String  @default("[]")
   /// Empty until a real photograph is supplied; the UI shows initials instead.
   imageUrl    String  @default("")
+  /// Direct line, shown publicly on the profile. Empty hides the row.
+  phone       String  @default("")
 
   sortOrder   Int     @default(0)
   isPublished Boolean @default(true)

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Clock, Mail, MapPin, MessageCircle, Phone } from 'lucide-react'
 
 import { buildWhatsAppLink, getSiteSettings } from '@/lib/site'
+import { getTeam } from '@/lib/team'
 import { buildMetadata } from '@/lib/seo'
 
 import { PageHero } from '@/components/site/page-hero'
@@ -18,7 +19,7 @@ export const metadata: Metadata = buildMetadata({
 })
 
 export default async function ContactPage() {
-  const settings = await getSiteSettings()
+  const [settings, team] = await Promise.all([getSiteSettings(), getTeam()])
   const { contact, socials } = settings
   const whatsappHref = buildWhatsAppLink(
     contact.whatsapp,
@@ -121,6 +122,36 @@ export default async function ContactPage() {
                   </li>
                 ) : null}
               </ul>
+
+              {team.some((member) => member.telHref) ? (
+                <div className="mt-10">
+                  <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-500">
+                    Speak to a director
+                  </h3>
+                  <ul className="mt-4 space-y-3">
+                    {team
+                      .filter((member) => member.telHref)
+                      .map((member) => (
+                        <li key={member.id} className="flex items-baseline justify-between gap-4">
+                          <span>
+                            <span className="block text-[14px] font-medium text-maroon-900">
+                              {member.name}
+                            </span>
+                            <span className="block text-[12.5px] text-ink-500">
+                              {member.designation}
+                            </span>
+                          </span>
+                          <a
+                            href={member.telHref ?? undefined}
+                            className="tabular shrink-0 text-[14px] font-medium text-maroon-700 hover:underline"
+                          >
+                            {member.phone}
+                          </a>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              ) : null}
 
               {socials.length > 0 ? (
                 <div className="mt-10">

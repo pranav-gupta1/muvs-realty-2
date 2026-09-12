@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
-import { HandshakeIcon, ShieldCheck, Users } from 'lucide-react'
+import { HandshakeIcon, Phone, ShieldCheck, Users } from 'lucide-react'
 
 import { getSiteSettings } from '@/lib/site'
 import { getTeam } from '@/lib/team'
@@ -117,6 +117,16 @@ export default async function AboutPage() {
                       <p className="mt-2 text-[13.5px] uppercase tracking-[0.1em] text-gold-500">
                         {member.designation}
                       </p>
+
+                      {member.telHref ? (
+                        <a
+                          href={member.telHref}
+                          className="tabular mt-3 inline-flex items-center gap-2 text-[14px] font-medium text-maroon-700 transition-colors hover:text-maroon-500"
+                        >
+                          <Phone className="size-4 text-gold-500" />
+                          {member.phone}
+                        </a>
+                      ) : null}
 
                       {member.bio ? (
                         <div

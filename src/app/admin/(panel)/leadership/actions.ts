@@ -32,6 +32,7 @@ export async function saveTeamMember(form: FormData) {
     quote: str(form, 'quote'),
     credentials: list(form, 'credentials'),
     imageUrl: str(form, 'imageUrl'),
+    phone: str(form, 'phone'),
     sortOrder: int(form, 'sortOrder', 0),
     isPublished: bool(form, 'isPublished'),
   }

@@ -17,6 +17,10 @@ export type TeamProfile = {
   quote: string
   credentials: string[]
   imageUrl: string
+  /** Direct line as supplied, e.g. "+91 98102 02834". Empty hides the row. */
+  phone: string
+  /** tel: href for the direct line, or null when there is none. */
+  telHref: string | null
   /** Initials used when no photograph has been supplied yet. */
   initials: string
 }
@@ -40,6 +44,7 @@ function toProfile(row: {
   quote: string
   credentials: string
   imageUrl: string
+  phone: string
 }): TeamProfile {
   return {
     id: row.id,
@@ -50,6 +55,8 @@ function toProfile(row: {
     quote: row.quote,
     credentials: readStringList(row.credentials),
     imageUrl: row.imageUrl,
+    phone: row.phone,
+    telHref: row.phone ? `tel:${row.phone.replace(/[^\d+]/g, '')}` : null,
     initials: initialsOf(row.name),
   }
 }

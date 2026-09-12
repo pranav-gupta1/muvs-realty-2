@@ -81,24 +81,25 @@ async function writeSampleBrochure(): Promise<string> {
 /* ── site settings ──────────────────────────────────────────────────────── */
 
 async function seedSettings(brochureUrl: string) {
-  // TODO(content): every "[FILL: ...]" below must be replaced by the owner,
+  // Contact details, RERA number and socials were supplied by the owner and are
+  // real. TODO(content): any remaining "[FILL: ...]" below is still outstanding,
   // either here or through /admin → Site Settings. Unfilled contact and social
   // values are hidden in the UI rather than rendered as broken links.
   const settings = {
     companyName: 'MUVS Realty',
     tagline: 'Residential and commercial property advisors across Delhi NCR',
 
-    phone: '[FILL: office phone, e.g. +91 98102 02834]',
-    whatsapp: '[FILL: WhatsApp number in E.164, e.g. +919810202834]',
-    email: '[FILL: e.g. info@muvsrealty.com]',
-    address: '[FILL: full office address with city and PIN code]',
-    officeHours: 'Monday to Saturday, 10 AM to 7 PM',
-    reraNumber: '[FILL: RERA registration number]',
+    phone: '+91 93100 86252',
+    whatsapp: '+919310086252',
+    email: 'info.muvsrealty@gmail.com',
+    address: 'B-488, Sector 2, Patwari, Greater Noida, Uttar Pradesh 201318',
+    officeHours: 'Monday to Sunday, 10 AM to 6 PM',
+    reraNumber: 'UPRERAAGT000443/02/2026',
 
-    instagram: '[FILL: Instagram profile URL]',
-    facebook: '[FILL: Facebook page URL]',
-    linkedin: '[FILL: LinkedIn profile URL]',
-    youtube: '[FILL: YouTube channel URL]',
+    instagram: 'https://www.instagram.com/muvsrealty',
+    facebook: 'https://www.facebook.com/p/MuvsRealty-61575730314949/',
+    linkedin: 'https://www.linkedin.com/company/muvs-realty-llp',
+    youtube: 'https://youtube.com/@muvsrealty',
 
     heroTitle: 'Buying property in Noida or Greater Noida? Talk to us first.',
     heroSubtitle:
@@ -113,7 +114,7 @@ async function seedSettings(brochureUrl: string) {
     // TODO(content): demo text, tracked by src/lib/sample-content.ts.
     aboutMission: SAMPLE_ABOUT_MISSION,
 
-    mapEmbedUrl: mapEmbed('Sector 18, Noida, Uttar Pradesh'),
+    mapEmbedUrl: mapEmbed('MUVS REALTY, B-488, Sector 2, Patwari, Greater Noida, Uttar Pradesh 201318'),
 
     // TODO(content): sample figures. Tracked by src/lib/sample-content.ts and
     // flagged on the admin dashboard until the owner supplies the real ones.
@@ -1276,6 +1277,7 @@ async function seedTeam() {
       name: 'Mohit Goel',
       designation: 'Co-Founder and Director',
       sortOrder: 0,
+      phone: '+91 98102 02834',
       bio:
       '<p>Mohit Goel is a co-founder and Director of MUVS Realty, and the operational anchor of the firm. He brings more than 19 years of experience as an industrial trader in the construction sector, and works from data modelling and market tracking rather than from speculation.</p>' +
       '<p>He runs a logistics operation with a private fleet of 21 trucks, and has spent close to two decades supplying building material directly from manufacturing hubs to major development sites. That mix of supply chain data, corporate management and operational scale shapes how he reads the market: where infrastructure is expanding, how cycles turn, and how an investment should be judged.</p>' +
@@ -1284,8 +1286,10 @@ async function seedTeam() {
       '<li><strong>Developer risk.</strong> Twenty years of working directly with infrastructure players means knowing the financial position, material quality and delivery record of regional developers, so clients buy property that is legally clean and structurally sound.</li>' +
       '<li><strong>Market timing.</strong> Supply chain insight makes structural cycles easier to read, which helps clients time when to enter and when to exit.</li></ul>',
       quote: '',
-      // TODO(content): academic credentials for Mohit Goel not supplied yet.
-      credentials: JSON.stringify([]),
+      credentials: JSON.stringify([
+        'MBA, Business Administration',
+        'BCA, Computer Applications',
+      ]),
       imageUrl: '',
       isPublished: true,
     },
@@ -1294,6 +1298,7 @@ async function seedTeam() {
       name: 'Vipul Choudhary',
       designation: 'Co-Founder and Director',
       sortOrder: 1,
+      phone: '+91 96542 37642',
       bio:
       '<p>Vipul Choudhary is a co-founder and Director of MUVS Realty. He is an international business strategist and management consultant with over two decades of leadership experience across North America, Africa, the Middle East and India.</p>' +
       '<p>He has lived and worked in the United States, South Africa, Tanzania, Kenya, the Middle East and India, and brings a working knowledge of global compliance, cross-cultural markets and international asset standards. He has worked closely with institutions including State Farm Insurance, Cablevision, AutoZone and Fresenius Medical Care.</p>' +
@@ -1333,8 +1338,8 @@ async function seedCertifications() {
       title: 'RERA Agent Registration',
       issuingBody: 'Uttar Pradesh Real Estate Regulatory Authority',
       year: 2023,
-      // TODO(content): replace with the actual registration number.
-      number: '[FILL: RERA agent registration number]',
+      // Supplied by the owner 2026-09-12.
+      number: 'UPRERAAGT000443/02/2026',
       imageUrl: img(PHOTOS.documents[0], 1400),
       description:
         'Registration as a real estate agent under the Real Estate (Regulation and Development) Act, 2016. It allows us to sell registered projects anywhere in Uttar Pradesh.',
@@ -1541,7 +1546,7 @@ async function main() {
 
   console.info(
     [
-      `  ✓ Site settings      1 (contains [FILL: …] placeholders, see /admin)`,
+      `  ✓ Site settings      1 (real contact details, RERA number and socials)`,
       `  ✓ Projects           ${projects} (${preLaunch} pre-launch)`,
       `  ✓ Inventory          ${inventory}`,
       `  ✓ Certifications     ${certifications}`,

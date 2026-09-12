@@ -74,6 +74,19 @@ export default async function AdminLeadershipPage({
               />
             </AdminField>
 
+            <AdminField
+              label="Direct line"
+              htmlFor="phone"
+              hint="Shown publicly on the profile and on the contact page. Leave blank to hide it."
+            >
+              <TextInput
+                id="phone"
+                name="phone"
+                defaultValue={editing?.phone ?? ''}
+                placeholder="+91 98102 02834"
+              />
+            </AdminField>
+
             <AdminField label="URL slug" htmlFor="slug" hint="Leave blank to generate from the name.">
               <TextInput id="slug" name="slug" defaultValue={editing?.slug} placeholder="auto" />
             </AdminField>
