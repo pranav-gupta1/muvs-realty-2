@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
-import { Award, Compass, HandshakeIcon, ShieldCheck } from 'lucide-react'
+import { HandshakeIcon, ShieldCheck, Users } from 'lucide-react'
 
-import { getSiteSettings, isPlaceholder } from '@/lib/site'
+import { getSiteSettings } from '@/lib/site'
+import { getTeam } from '@/lib/team'
 import { buildMetadata } from '@/lib/seo'
 import { BLUR_DATA_URL } from '@/lib/images'
 
@@ -19,32 +20,27 @@ export const metadata: Metadata = buildMetadata({
   path: '/about',
 })
 
-const PILLARS = [
+/** Supplied by the owner as "Our Core Competencies". */
+const COMPETENCIES = [
   {
     icon: ShieldCheck,
-    title: 'We check before we recommend',
-    body: 'Before a property reaches your shortlist, we check the title, mutation, approvals, dues and RERA filing. If something does not add up, we will not show it to you.',
+    title: '100% Transparency',
+    body: 'Honest and accurate information you can rely on.',
   },
   {
-    icon: Compass,
-    title: 'We know our markets',
-    body: 'We work in Noida, Greater Noida, the Yamuna Expressway and Delhi NCR, and we are out in these areas every week. Staying focused is what keeps our pricing advice accurate.',
+    icon: Users,
+    title: 'Client First',
+    body: 'Your needs and interests always come first.',
   },
   {
     icon: HandshakeIcon,
-    title: 'We tell you what we think',
-    body: 'If a property is overpriced, or it makes sense to wait, we will say so. We would rather lose a deal than see you buy the wrong property.',
-  },
-  {
-    icon: Award,
-    title: 'One advisor, start to finish',
-    body: 'The same advisor looks after you from the first site visit through registry and handover. You will not be passed to a call centre once you have booked.',
+    title: 'We Build Relations',
+    body: 'We believe in creating long-term relationships, not just transactions.',
   },
 ]
 
 export default async function AboutPage() {
-  const settings = await getSiteSettings()
-  const directorNamed = !isPlaceholder(settings.directorName)
+  const [settings, team] = await Promise.all([getSiteSettings(), getTeam()])
 
   return (
     <>
@@ -56,67 +52,92 @@ export default async function AboutPage() {
         imageUrl="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=75"
       />
 
-      {/* Director */}
-      <Section className="bg-cream-50">
-        <div className="container">
-          <div className="grid items-start gap-12 lg:grid-cols-12 lg:gap-16">
-            <Reveal className="lg:col-span-5">
-              <div className="relative aspect-[4/5] overflow-hidden rounded border border-gold-500/25 shadow-card">
-                <Image
-                  src={
-                    settings.directorImageUrl ||
-                    'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=75'
-                  }
-                  alt={directorNamed ? settings.directorName : 'Director, MUVS Realty'}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 42vw"
-                  placeholder="blur"
-                  blurDataURL={BLUR_DATA_URL}
-                  className="object-cover"
-                />
-              </div>
+      {/* Leadership */}
+      {team.length > 0 ? (
+        <Section className="bg-cream-50">
+          <div className="container">
+            <SectionHeading
+              eyebrow="Leadership"
+              title={team.length > 1 ? 'The people behind MUVS Realty' : 'Meet the Director'}
+            />
 
-              {settings.directorCredentialList.length > 0 ? (
-                <ul className="mt-6 space-y-2.5 rounded border border-maroon-900/8 bg-white p-5">
-                  <li className="text-[11px] font-semibold uppercase tracking-[0.12em] text-gold-500">
-                    Credentials
-                  </li>
-                  {settings.directorCredentialList.map((credential) => (
-                    <li key={credential} className="flex gap-3 text-[13.5px] leading-relaxed text-ink-900/85">
-                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-gold-500" />
-                      {credential}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </Reveal>
+            <div className="mt-12 space-y-16">
+              {team.map((member, index) => (
+                <Reveal key={member.id}>
+                  <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-14">
+                    <div className="lg:col-span-4">
+                      {member.imageUrl ? (
+                        <div className="relative aspect-[4/5] overflow-hidden rounded border border-gold-500/25 shadow-card">
+                          <Image
+                            src={member.imageUrl}
+                            alt={member.name}
+                            fill
+                            priority={index === 0}
+                            sizes="(max-width: 1024px) 100vw, 33vw"
+                            placeholder="blur"
+                            blurDataURL={BLUR_DATA_URL}
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        /* No photograph supplied yet, so show initials rather than
+                           a stock photo of someone who is not them. */
+                        <div className="flex aspect-[4/5] flex-col items-center justify-center gap-4 rounded border border-gold-500/25 bg-maroon-900 shadow-card">
+                          <span className="font-serif text-5xl font-semibold text-gold-200">
+                            {member.initials}
+                          </span>
+                          <span className="text-[11px] uppercase tracking-[0.14em] text-cream-50/45">
+                            Photograph to follow
+                          </span>
+                        </div>
+                      )}
 
-            <Reveal delay={0.08} className="lg:col-span-7">
-              <p className="eyebrow">Leadership</p>
-              <h2 className="mt-3 text-[30px] leading-tight sm:text-4xl">
-                {directorNamed ? settings.directorName : 'Meet the Director'}
-              </h2>
-              <p className="mt-2 text-[13.5px] uppercase tracking-[0.1em] text-gold-500">
-                {settings.directorDesignation}
-              </p>
+                      {member.credentials.length > 0 ? (
+                        <ul className="mt-5 space-y-2.5 rounded border border-maroon-900/8 bg-white p-5">
+                          <li className="text-[11px] font-semibold uppercase tracking-[0.12em] text-gold-500">
+                            Credentials
+                          </li>
+                          {member.credentials.map((credential) => (
+                            <li
+                              key={credential}
+                              className="flex gap-3 text-[13.5px] leading-relaxed text-ink-900/85"
+                            >
+                              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-gold-500" />
+                              {credential}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
 
-              {settings.directorBio ? (
-                <div
-                  className="prose-brand mt-8"
-                  dangerouslySetInnerHTML={{ __html: settings.directorBio }}
-                />
-              ) : null}
+                    <div className="lg:col-span-8">
+                      <h3 className="font-serif text-[26px] leading-tight text-maroon-900 sm:text-3xl">
+                        {member.name}
+                      </h3>
+                      <p className="mt-2 text-[13.5px] uppercase tracking-[0.1em] text-gold-500">
+                        {member.designation}
+                      </p>
 
-              {settings.directorQuote ? (
-                <blockquote className="mt-10 border-l-2 border-gold-500 pl-6 font-serif text-[20px] leading-relaxed text-maroon-900 sm:text-[24px]">
-                  “{settings.directorQuote}”
-                </blockquote>
-              ) : null}
-            </Reveal>
+                      {member.bio ? (
+                        <div
+                          className="prose-brand mt-7"
+                          dangerouslySetInnerHTML={{ __html: member.bio }}
+                        />
+                      ) : null}
+
+                      {member.quote ? (
+                        <blockquote className="mt-8 border-l-2 border-gold-500 pl-6 font-serif text-[20px] leading-relaxed text-maroon-900">
+                          “{member.quote}”
+                        </blockquote>
+                      ) : null}
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
           </div>
-        </div>
-      </Section>
+        </Section>
+      ) : null}
 
       {/* Story + mission */}
       <Section className="bg-white">
@@ -167,8 +188,8 @@ export default async function AboutPage() {
             align="center"
           />
 
-          <RevealGroup className="mt-12 grid gap-5 sm:grid-cols-2">
-            {PILLARS.map((pillar) => (
+          <RevealGroup className="mt-12 grid gap-5 sm:grid-cols-3">
+            {COMPETENCIES.map((pillar) => (
               <RevealItem key={pillar.title} className="h-full">
                 <div className="flex h-full gap-5 rounded border border-maroon-900/8 bg-cream-50 p-6 transition-colors hover:border-gold-500/60">
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-maroon-900">

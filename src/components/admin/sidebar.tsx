@@ -13,6 +13,7 @@ import {
   LogOut,
   Menu,
   MessageSquareQuote,
+  UserRound,
   Rocket,
   Settings,
   Users,
@@ -30,6 +31,7 @@ const LINKS = [
   { href: '/admin/certifications', label: 'Certifications', icon: Award },
   { href: '/admin/videos', label: 'Videos', icon: Video },
   { href: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
+  { href: '/admin/leadership', label: 'Leadership', icon: UserRound },
   { href: '/admin/settings', label: 'Site Settings', icon: Settings },
 ] as const
 

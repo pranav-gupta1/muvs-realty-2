@@ -104,7 +104,7 @@ export function jsonField<S extends z.ZodTypeAny>(
   }
 }
 
-type SlugModel = 'project' | 'inventory' | 'certification' | 'testimonial'
+type SlugModel = 'project' | 'inventory' | 'certification' | 'testimonial' | 'teamMember'
 
 /** Returns the id of the row already holding this slug, if any. */
 async function slugOwner(model: SlugModel, slug: string): Promise<string | null> {
@@ -118,6 +118,8 @@ async function slugOwner(model: SlugModel, slug: string): Promise<string | null>
       return (await prisma.certification.findUnique({ where: { slug }, select }))?.id ?? null
     case 'testimonial':
       return (await prisma.testimonial.findUnique({ where: { slug }, select }))?.id ?? null
+    case 'teamMember':
+      return (await prisma.teamMember.findUnique({ where: { slug }, select }))?.id ?? null
   }
 }
 

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import { DEFAULT_SETTINGS, isPlaceholder } from '@/lib/site'
-import { readStringList } from '@/lib/json'
 import { AdminPageHeader } from '@/components/admin/page-header'
 import {
   AdminField,
@@ -36,7 +35,7 @@ export default async function AdminSettingsPage({
     <>
       <AdminPageHeader
         title="Site Settings"
-        description="Contact details, social links, hero copy, the director section and the trust-strip numbers. Anything left as a “[FILL: …]” placeholder is hidden on the website so it never shows as a broken link."
+        description="Contact details, social links, hero copy and the trust-strip numbers. Director profiles live under Leadership. Anything left as a “[FILL: …]” placeholder is hidden on the website so it never shows as a broken link."
       />
 
       {saved ? <SavedNotice>Saved. Every page has been updated.</SavedNotice> : null}
@@ -136,50 +135,6 @@ export default async function AdminSettingsPage({
           </AdminField>
           <AdminField label="Hero background image">
             <SingleImagePicker name="heroImageUrl" initialUrl={settings.heroImageUrl} />
-          </AdminField>
-        </FormSection>
-
-        <FormSection title="Director" description="Shown on the home page preview and in full on /about.">
-          <div className="grid gap-5 sm:grid-cols-2">
-            <AdminField
-              label="Name"
-              htmlFor="directorName"
-              hint={fillHint(settings.directorName, 'Shown on /about and the home page.')}
-            >
-              <TextInput id="directorName" name="directorName" defaultValue={settings.directorName} />
-            </AdminField>
-            <AdminField label="Designation" htmlFor="directorDesignation">
-              <TextInput
-                id="directorDesignation"
-                name="directorDesignation"
-                defaultValue={settings.directorDesignation}
-              />
-            </AdminField>
-          </div>
-
-          <AdminField
-            label="Biography"
-            htmlFor="directorBio"
-            hint={fillHint(settings.directorBio, 'Two or three paragraphs. Basic HTML is allowed.')}
-          >
-            <TextArea id="directorBio" name="directorBio" rows={8} defaultValue={settings.directorBio} />
-          </AdminField>
-
-          <AdminField label="Philosophy quote" htmlFor="directorQuote" hint="Pulled out in gold serif type.">
-            <TextArea id="directorQuote" name="directorQuote" rows={2} defaultValue={settings.directorQuote} />
-          </AdminField>
-
-          <AdminField label="Credentials" htmlFor="directorCredentials" hint="One per line.">
-            <TextArea
-              id="directorCredentials"
-              name="directorCredentials"
-              rows={4}
-              defaultValue={readStringList(settings.directorCredentials).join('\n')}
-            />
-          </AdminField>
-
-          <AdminField label="Photo">
-            <SingleImagePicker name="directorImageUrl" initialUrl={settings.directorImageUrl} />
           </AdminField>
         </FormSection>
 

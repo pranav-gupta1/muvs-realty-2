@@ -255,6 +255,32 @@ model OtpChallenge {
 
 // ── Content ─────────────────────────────────────────────────────────────────
 
+/// A director or senior team member shown on /about and previewed on the home page.
+/// Replaces the single set of director* fields that used to live on SiteSettings,
+/// because MUVS Realty has two co-founders.
+model TeamMember {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  designation String
+  /// Rich text (HTML) biography.
+  bio         String  @default("")
+  /// Pulled out in gold serif type on /about. Optional.
+  quote       String  @default("")
+  /// @json string[] of degrees, memberships and licences.
+  credentials String  @default("[]")
+  /// Empty until a real photograph is supplied; the UI shows initials instead.
+  imageUrl    String  @default("")
+
+  sortOrder   Int     @default(0)
+  isPublished Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isPublished, sortOrder])
+}
+
 model Certification {
   id          String  @id @default(cuid())
   slug        String  @unique
@@ -328,12 +354,6 @@ model SiteSettings {
   heroSubtitle String @default("")
   heroImageUrl String @default("")
 
-  directorName        String @default("")
-  directorDesignation String @default("")
-  directorBio         String @default("")
-  directorQuote       String @default("")
-  directorImageUrl    String @default("")
-  directorCredentials String @default("[]") /// @json string[]
 
   aboutStory   String @default("")
   aboutMission String @default("")

@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
-import { int, list, str } from '@/lib/admin-forms'
+import { int, str } from '@/lib/admin-forms'
 
 async function assertAdmin() {
   const session = await auth()
@@ -38,12 +38,6 @@ export async function saveSettings(form: FormData) {
     heroSubtitle: str(form, 'heroSubtitle'),
     heroImageUrl: str(form, 'heroImageUrl'),
 
-    directorName: str(form, 'directorName'),
-    directorDesignation: str(form, 'directorDesignation'),
-    directorBio: str(form, 'directorBio'),
-    directorQuote: str(form, 'directorQuote'),
-    directorImageUrl: str(form, 'directorImageUrl'),
-    directorCredentials: list(form, 'directorCredentials'),
 
     aboutStory: str(form, 'aboutStory'),
     aboutMission: str(form, 'aboutMission'),

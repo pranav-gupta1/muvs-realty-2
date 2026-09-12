@@ -19,6 +19,10 @@ export const SAMPLE_STATS = {
   statClients: 1200,
 } as const
 
+/** Mission statement written for the demo. Imported by the seed. */
+export const SAMPLE_ABOUT_MISSION =
+  'To help our clients buy and sell property in Delhi NCR with verified paperwork and a fair price, and to stay available to them after the registry is done.'
+
 /** The seeded hero photo, matched on the Unsplash photo id. */
 export const SAMPLE_HERO_PHOTO_ID = 'photo-1600585154340-be6161a56a0c'
 
@@ -94,13 +98,15 @@ export type SampleGroup = {
 
 /** What is still sample content, for the admin dashboard. */
 export async function getSampleContent(): Promise<SampleGroup[]> {
-  const [settings, certifications, videos, testimonials, projects, inventory] = await Promise.all([
+  const [settings, certifications, videos, testimonials, projects, inventory, missingPhotos] =
+    await Promise.all([
     prisma.siteSettings.findUnique({ where: { id: 'default' } }),
     prisma.certification.count({ where: { slug: { in: UNVERIFIED_CERTIFICATION_SLUGS } } }),
     prisma.video.count({ where: { youtubeId: { in: SAMPLE_VIDEO_IDS } } }),
     prisma.testimonial.count({ where: { slug: { in: SAMPLE_TESTIMONIAL_SLUGS } } }),
     prisma.project.count({ where: { slug: { in: SAMPLE_PROJECT_SLUGS } } }),
     prisma.inventory.count({ where: { slug: { in: SAMPLE_INVENTORY_SLUGS } } }),
+    prisma.teamMember.count({ where: { imageUrl: '' } }),
   ])
 
   const groups: SampleGroup[] = []
@@ -153,6 +159,28 @@ export async function getSampleContent(): Promise<SampleGroup[]> {
       note: 'Invented projects and resale listings, including placeholder RERA numbers. Replace them with real stock.',
       href: '/admin/projects',
       isClaim: true,
+    })
+  }
+
+  if (settings?.aboutMission === SAMPLE_ABOUT_MISSION) {
+    groups.push({
+      key: 'about-copy',
+      label: 'Company story and mission',
+      count: null,
+      note: 'The story and mission on /about were written for the demo. Replace them with the company\u2019s own words.',
+      href: '/admin/settings',
+      isClaim: true,
+    })
+  }
+
+  if (missingPhotos > 0) {
+    groups.push({
+      key: 'team-photos',
+      label: 'Director photographs',
+      count: missingPhotos,
+      note: 'No photographs supplied yet, so /about and the home page show initials instead.',
+      href: '/admin/leadership',
+      isClaim: false,
     })
   }
 

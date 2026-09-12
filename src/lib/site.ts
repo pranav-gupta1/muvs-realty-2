@@ -1,7 +1,6 @@
 import { cache } from 'react'
 import type { SiteSettings } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
-import { readStringList } from '@/lib/json'
 import { toWhatsAppNumber } from '@/lib/phone'
 
 /**
@@ -47,12 +46,6 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   heroSubtitle:
     'Homes, plots and commercial space across Noida, Greater Noida and the Yamuna Expressway. We check the title and approvals before you pay, and handle the price negotiation for you.',
   heroImageUrl: '',
-  directorName: '',
-  directorDesignation: 'Director, MUVS Realty',
-  directorBio: '',
-  directorQuote: '',
-  directorImageUrl: '',
-  directorCredentials: '[]',
   aboutStory: '',
   aboutMission: '',
   mapEmbedUrl: '',
@@ -78,7 +71,6 @@ export type ResolvedSettings = SiteSettings & {
     mailtoHref: string | null
   }
   socials: SocialLink[]
-  directorCredentialList: string[]
 }
 
 export function resolveSettings(row: SiteSettings | null): ResolvedSettings {
@@ -113,7 +105,6 @@ export function resolveSettings(row: SiteSettings | null): ResolvedSettings {
       mailtoHref: email ? `mailto:${email}` : null,
     },
     socials,
-    directorCredentialList: readStringList(settings.directorCredentials),
   }
 }
 

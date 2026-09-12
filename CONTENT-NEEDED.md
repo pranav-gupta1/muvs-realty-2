@@ -28,14 +28,19 @@ These appear on every page. Visitors cannot reach you until they are filled in.
 - [ ] **UP RERA agent registration number.** It usually looks like UPRERAAGT12345. By law this has to appear on the website, and it will be shown at the bottom of every page.
 - [ ] **A scan or clear photo of the RERA certificate.**
 
-## 3. About the director
+## 3. Leadership
 
-- [ ] **Full name**, exactly as it should appear.
-- [ ] **Designation.** Currently "Director, MUVS Realty". Please confirm.
-- [ ] **A short bio, 2 to 3 paragraphs.** How you got into real estate, the areas you know best, notable deals or developers you have worked with, and what clients can expect when they work with you.
-- [ ] **A one or two line quote** in the director's own words about how they work with clients. Optional.
-- [ ] **Credentials.** Degrees, professional memberships, years in the business. A simple list is fine.
-- [ ] **A professional photo.** Portrait orientation, at least 1200 pixels tall, with a plain or office background.
+**Received and already on the site:** biographies for both co-founders, Vipul Choudhary's
+credentials, the designations, and the three core competencies (100% Transparency, Client First,
+We Build Relations). Both profiles are live on /about, and Mohit Goel is previewed on the home page.
+
+Still needed:
+
+- [ ] **Mohit Goel's credentials.** His biography refers to a strong academic foundation but does not say what it is. Degrees, institutions and any professional memberships.
+- [ ] **A photograph of Mohit Goel.** Portrait orientation, at least 1200 pixels tall, plain or office background. The site currently shows his initials.
+- [ ] **A photograph of Vipul Choudhary.** Same format. Currently showing initials.
+- [ ] **A pull quote for each director.** One or two lines in their own words about how they work with clients. Optional.
+- [ ] **Confirm the biographies read the way you want.** They were lightly edited for punctuation, spelling and house style. The wording and every claim in them is unchanged.
 
 ## 4. Social media
 
@@ -63,7 +68,13 @@ These count up on the home page. The current figures are invented. Please send t
 - [ ] **Cities you work in** (sample figure: 6)
 - [ ] **Clients served** (sample figure: 1,200)
 
-## 6. Confirm or remove
+## 6. Vision, story and mission
+
+- [ ] **The vision statement.** This was mentioned but the message that followed contained the core competencies instead, so the vision itself has not come through yet.
+- [ ] **The company story.** Two or three paragraphs on how MUVS Realty started. The version on /about now was written for the demo.
+- [ ] **The mission statement.** One or two sentences. Also demo text at the moment.
+
+## 7. Confirm or remove
 
 The site lists these as sample entries. Each one will be removed unless you confirm you hold it,
 since a certification cannot be shown unless it is real.
@@ -73,13 +84,13 @@ since a certification cannot be shown unless it is real.
 - [ ] **Empanelled channel partner, 2021.** Which developers have empanelled you? Please send the empanelment letters.
 - [ ] **Any other certificates or awards** you would like shown.
 
-## 7. Photos, videos and client reviews
+## 8. Photos, videos and client reviews
 
 - [ ] **A main banner photo for the home page.** Landscape, at least 2400 pixels wide. A project you have sold, or a good view of the area.
 - [ ] **YouTube links to your own videos**: property tours, site visits, client reviews or market updates. The site currently shows sample videos from other channels.
 - [ ] **3 to 5 client testimonials.** For each: the client's name, what they bought and where, a few lines in their words, and their permission to publish it. The quotes on the site now were written for the demo.
 
-## 8. Your actual listings
+## 9. Your actual listings
 
 Everything currently on the site (7 projects and 18 resale listings) is sample data, including the
 RERA numbers, and will be replaced.
@@ -87,7 +98,7 @@ RERA numbers, and will be replaced.
 - [ ] **Projects you are selling.** For each: project name, developer, location and sector, price range, unit sizes, possession date, RERA project number, the brochure (PDF), photos and floor plans.
 - [ ] **Resale properties.** For each: type (flat, plot, villa, land, shop, office, shed), location, price, area, the key details, and photos.
 
-## 9. For whoever sets up the website
+## 10. For whoever sets up the website
 
 These are only needed when the site goes live.
 

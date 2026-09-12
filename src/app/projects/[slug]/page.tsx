@@ -211,7 +211,7 @@ export default async function ProjectDetailPage({
                 </div>
               </Reveal>
 
-              {/* Gate notice — replaces the locked sections entirely. */}
+              {/* Gate notice: replaces the locked sections entirely. */}
               {!unlocked ? (
                 <Reveal className="mt-10 rounded border border-gold-500/45 bg-gold-200/25 p-6 sm:p-8">
                   <div className="flex items-start gap-4">
@@ -271,7 +271,7 @@ export default async function ProjectDetailPage({
                 </Reveal>
               ) : null}
 
-              {/* Configurations — gated */}
+              {/* Configurations: gated */}
               {unlocked && configurations.length > 0 ? (
                 <Reveal className="mt-12">
                   <h2 className="font-serif text-2xl text-maroon-900">Configurations</h2>
@@ -327,7 +327,7 @@ export default async function ProjectDetailPage({
                 </Reveal>
               ) : null}
 
-              {/* Floor plans — gated */}
+              {/* Floor plans: gated */}
               {unlocked && floorPlans.length > 0 ? (
                 <Reveal className="mt-12">
                   <h2 className="font-serif text-2xl text-maroon-900">Floor plans</h2>
@@ -399,7 +399,7 @@ export default async function ProjectDetailPage({
                   contactPhoneHref={settings.contact.telHref}
                 />
 
-                {/* Brochure — gated */}
+                {/* Brochure: gated */}
                 {unlocked && project.brochureUrl ? (
                   <a
                     href={project.brochureUrl}

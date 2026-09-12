@@ -4,7 +4,8 @@ import type { Metadata } from 'next'
 import { ArrowRight, ArrowUpRight, Award, MapPin, Sparkles } from 'lucide-react'
 
 import { prisma } from '@/lib/prisma'
-import { getSiteSettings, isPlaceholder } from '@/lib/site'
+import { getSiteSettings } from '@/lib/site'
+import { getLeadProfile } from '@/lib/team'
 import { getFeaturedProjects, getPreLaunchProjects } from '@/lib/projects'
 import { getInventoryTypeCounts, serializeInventoryFilters } from '@/lib/inventory'
 import { PropertyLocation, PropertyType } from '@/lib/taxonomy'
@@ -74,7 +75,8 @@ const unsplash = (id: string, w = 1200) =>
 export default async function HomePage() {
   const settings = await getSiteSettings()
 
-  const [featured, preLaunch, typeCounts, videos, testimonials, certifications] = await Promise.all([
+  const [featured, preLaunch, typeCounts, videos, testimonials, certifications, lead] =
+    await Promise.all([
     getFeaturedProjects(6),
     getPreLaunchProjects(3),
     getInventoryTypeCounts(),
@@ -92,10 +94,12 @@ export default async function HomePage() {
       where: { isPublished: true },
       orderBy: { sortOrder: 'asc' },
     }),
+    getLeadProfile(),
   ])
 
+  const leadBio = lead ? truncate(stripHtml(lead.bio), 260) : ''
+
   const heroImage = settings.heroImageUrl || HERO_FALLBACK
-  const directorBio = truncate(stripHtml(settings.directorBio), 260)
 
   return (
     <>
@@ -344,57 +348,64 @@ export default async function HomePage() {
         </Section>
       ) : null}
 
-      {/* ── Director ─────────────────────────────────────────────────────── */}
-      <Section className="bg-cream-50">
-        <div className="container">
-          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-            <Reveal>
-              <div className="relative aspect-[4/5] overflow-hidden rounded border border-gold-500/25 shadow-card sm:aspect-[4/3] lg:aspect-[4/5]">
-                <Image
-                  src={settings.directorImageUrl || unsplash('photo-1497366216548-37526070297c', 1000)}
-                  alt={
-                    isPlaceholder(settings.directorName)
-                      ? 'Director, MUVS Realty'
-                      : settings.directorName
-                  }
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  placeholder="blur"
-                  blurDataURL={BLUR_DATA_URL}
-                  className="object-cover"
-                />
-              </div>
-            </Reveal>
+      {/* ── Leadership ──────────────────────────────────────────────────── */}
+      {lead ? (
+        <Section className="bg-cream-50">
+          <div className="container">
+            <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+              <Reveal>
+                {lead.imageUrl ? (
+                  <div className="relative aspect-[4/5] overflow-hidden rounded border border-gold-500/25 shadow-card sm:aspect-[4/3] lg:aspect-[4/5]">
+                    <Image
+                      src={lead.imageUrl}
+                      alt={lead.name}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      placeholder="blur"
+                      blurDataURL={BLUR_DATA_URL}
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex aspect-[4/5] flex-col items-center justify-center gap-4 rounded border border-gold-500/25 bg-maroon-900 shadow-card sm:aspect-[4/3] lg:aspect-[4/5]">
+                    <span className="font-serif text-6xl font-semibold text-gold-200">
+                      {lead.initials}
+                    </span>
+                    <span className="text-[11px] uppercase tracking-[0.14em] text-cream-50/45">
+                      Photograph to follow
+                    </span>
+                  </div>
+                )}
+              </Reveal>
 
-            <Reveal delay={0.08}>
-              <p className="eyebrow">Leadership</p>
-              <h2 className="mt-3 text-[28px] leading-tight sm:text-4xl">
-                {isPlaceholder(settings.directorName) ? 'Meet the Director' : settings.directorName}
-              </h2>
-              <p className="mt-2 text-[13.5px] uppercase tracking-[0.1em] text-gold-500">
-                {settings.directorDesignation}
-              </p>
+              <Reveal delay={0.08}>
+                <p className="eyebrow">Leadership</p>
+                <h2 className="mt-3 text-[28px] leading-tight sm:text-4xl">{lead.name}</h2>
+                <p className="mt-2 text-[13.5px] uppercase tracking-[0.1em] text-gold-500">
+                  {lead.designation}
+                </p>
 
-              {settings.directorQuote ? (
-                <blockquote className="mt-8 border-l-2 border-gold-500 pl-5 font-serif text-[19px] leading-relaxed text-maroon-900 sm:text-[22px]">
-                  “{settings.directorQuote}”
-                </blockquote>
-              ) : null}
+                {lead.quote ? (
+                  <blockquote className="mt-8 border-l-2 border-gold-500 pl-5 font-serif text-[19px] leading-relaxed text-maroon-900 sm:text-[22px]">
+                    “{lead.quote}”
+                  </blockquote>
+                ) : null}
 
-              {directorBio ? (
-                <p className="mt-7 text-[15px] leading-relaxed text-ink-500">{directorBio}</p>
-              ) : null}
+                {leadBio ? (
+                  <p className="mt-7 text-[15px] leading-relaxed text-ink-500">{leadBio}</p>
+                ) : null}
 
-              <Button asChild variant="outline" className="mt-8">
-                <Link href="/about">
-                  Read more
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-            </Reveal>
+                <Button asChild variant="outline" className="mt-8">
+                  <Link href="/about">
+                    Meet the team
+                    <ArrowRight className="size-4" />
+                  </Link>
+                </Button>
+              </Reveal>
+            </div>
           </div>
-        </div>
-      </Section>
+        </Section>
+      ) : null}
 
       {/* ── Videos ───────────────────────────────────────────────────────── */}
       {videos.length > 0 ? (

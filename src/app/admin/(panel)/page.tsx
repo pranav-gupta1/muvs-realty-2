@@ -15,8 +15,6 @@ import { Badge } from '@/components/ui/badge'
 export const metadata: Metadata = { title: 'Dashboard', robots: { index: false } }
 
 const PLACEHOLDER_FIELDS = [
-  ['directorName', 'Director name'],
-  ['directorBio', 'Director bio'],
   ['phone', 'Phone'],
   ['whatsapp', 'WhatsApp'],
   ['email', 'Email'],

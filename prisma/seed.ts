@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import { hashPassword } from '../src/lib/auth'
 import { deriveInventoryFields } from '../src/lib/inventory'
 import { AMENITY_SETS, PHOTOS, img, mapEmbed } from './seed-data'
-import { SAMPLE_STATS } from '../src/lib/sample-content'
+import { SAMPLE_ABOUT_MISSION, SAMPLE_STATS } from '../src/lib/sample-content'
 
 const prisma = new PrismaClient()
 
@@ -105,30 +105,13 @@ async function seedSettings(brochureUrl: string) {
       'Homes, plots and commercial space across Noida, Greater Noida and the Yamuna Expressway. We check the title and approvals before you pay, and handle the price negotiation for you.',
     heroImageUrl: img(PHOTOS.residential[2], 2400),
 
-    directorName: '[FILL: your full name]',
-    directorDesignation: 'Director, MUVS Realty',
-    directorBio: paragraphs(
-      '[FILL: 2 to 3 paragraphs about your background: how you entered real estate, the markets you know best, and the kind of clients you work with.]',
-      '[FILL: paragraph two, your track record. Mention notable transactions, the developers you work with, and what clients come back to you for.]',
-      '[FILL: paragraph three, what you believe about advising buyers and what a client can expect when they work with you.]',
-    ),
-    directorQuote:
-      'Most families buy a home once or twice in their lives. Before I recommend a property, I want to have visited the site and read the papers myself.',
-    directorImageUrl: img(PHOTOS.commercial[1], 1200),
-    directorCredentials: JSON.stringify([
-      'RERA-registered real estate agent, Uttar Pradesh',
-      'Member of the National Association of Realtors, India',
-      'Channel partner for leading Delhi NCR developers',
-      'Specialist in YEIDA and Noida Authority land transactions',
-    ]),
-
     aboutStory: paragraphs(
       'We set up MUVS Realty because buyers in Delhi NCR had plenty of listings to choose from but very few straight answers. Prices moved on rumour and approvals were quoted from memory. Often the only difference between a good plot and a disputed one was a document nobody had read.',
       'We began as a small advisory office in Noida and Greater Noida. Most of our work then, as now, was checking titles, reading RERA filings and visiting a site before recommending it. When a property had a problem, we told the client not to buy it.',
       'Today we work on apartments, plots, villas, agricultural land, industrial sheds and commercial space across the Yamuna Expressway corridor and the rest of Delhi NCR, for buyers living in India and abroad.',
     ),
-    aboutMission:
-      'To help our clients buy and sell property in Delhi NCR with verified paperwork and a fair price, and to stay available to them after the registry is done.',
+    // TODO(content): demo text, tracked by src/lib/sample-content.ts.
+    aboutMission: SAMPLE_ABOUT_MISSION,
 
     mapEmbedUrl: mapEmbed('Sector 18, Noida, Uttar Pradesh'),
 
@@ -1279,6 +1262,65 @@ async function seedInventory() {
   return seeds.length
 }
 
+/* ── leadership ─────────────────────────────────────────────────────────── */
+
+/**
+ * The two co-founders. Biographies and credentials were supplied by the owner.
+ * TODO(content): no photographs yet, so imageUrl is empty and the site shows
+ * initials instead of a stock photo of someone who is not them.
+ */
+async function seedTeam() {
+  const team = [
+    {
+      slug: 'mohit-goel',
+      name: 'Mohit Goel',
+      designation: 'Co-Founder and Director',
+      sortOrder: 0,
+      bio:
+      '<p>Mohit Goel is a co-founder and Director of MUVS Realty, and the operational anchor of the firm. He brings more than 19 years of experience as an industrial trader in the construction sector, and works from data modelling and market tracking rather than from speculation.</p>' +
+      '<p>He runs a logistics operation with a private fleet of 21 trucks, and has spent close to two decades supplying building material directly from manufacturing hubs to major development sites. That mix of supply chain data, corporate management and operational scale shapes how he reads the market: where infrastructure is expanding, how cycles turn, and how an investment should be judged.</p>' +
+      '<p>For buyers, that scale shows up in three ways:</p>' +
+      '<ul><li><strong>Location intelligence.</strong> Tracking where heavy construction material moves across the region shows which corridors are growing, often well before they appear on standard real estate maps.</li>' +
+      '<li><strong>Developer risk.</strong> Twenty years of working directly with infrastructure players means knowing the financial position, material quality and delivery record of regional developers, so clients buy property that is legally clean and structurally sound.</li>' +
+      '<li><strong>Market timing.</strong> Supply chain insight makes structural cycles easier to read, which helps clients time when to enter and when to exit.</li></ul>',
+      quote: '',
+      // TODO(content): academic credentials for Mohit Goel not supplied yet.
+      credentials: JSON.stringify([]),
+      imageUrl: '',
+      isPublished: true,
+    },
+    {
+      slug: 'vipul-choudhary',
+      name: 'Vipul Choudhary',
+      designation: 'Co-Founder and Director',
+      sortOrder: 1,
+      bio:
+      '<p>Vipul Choudhary is a co-founder and Director of MUVS Realty. He is an international business strategist and management consultant with over two decades of leadership experience across North America, Africa, the Middle East and India.</p>' +
+      '<p>He has lived and worked in the United States, South Africa, Tanzania, Kenya, the Middle East and India, and brings a working knowledge of global compliance, cross-cultural markets and international asset standards. He has worked closely with institutions including State Farm Insurance, Cablevision, AutoZone and Fresenius Medical Care.</p>' +
+      '<p>Managing risk for global insurance and medical groups calls for close attention to compliance and quality control, and he applies the same discipline to property advisory. That means vetting developer balance sheets, project delivery histories and legal titles, so clients are protected from market swings and construction delays.</p>',
+      quote: '',
+      credentials: JSON.stringify([
+        "B.Sc., St. Stephen's College, Delhi",
+        'M.A., Jawaharlal Nehru University, New Delhi',
+        'MBA, Hofstra University, New York',
+        'Advanced studies in Sociology and Public Administration, Annamalai University',
+      ]),
+      imageUrl: '',
+      isPublished: true,
+    },
+  ]
+
+  for (const member of team) {
+    await prisma.teamMember.upsert({
+      where: { slug: member.slug },
+      create: member,
+      update: member,
+    })
+  }
+
+  return team.length
+}
+
 /* ── certifications ─────────────────────────────────────────────────────── */
 
 async function seedCertifications() {
@@ -1490,6 +1532,7 @@ async function main() {
   const admin = await seedAdmin()
   const projects = await seedProjects(brochureUrl)
   const inventory = await seedInventory()
+  const teamCount = await seedTeam()
   const certifications = await seedCertifications()
   const videos = await seedVideos()
   const testimonials = await seedTestimonials()
@@ -1502,6 +1545,8 @@ async function main() {
       `  ✓ Projects           ${projects} (${preLaunch} pre-launch)`,
       `  ✓ Inventory          ${inventory}`,
       `  ✓ Certifications     ${certifications}`,
+
+      `  ✓ Leadership       ${teamCount} (photographs still to come)`,
       `  ✓ Videos             ${videos}`,
       `  ✓ Testimonials       ${testimonials}`,
       '',

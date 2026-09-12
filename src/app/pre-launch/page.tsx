@@ -105,7 +105,7 @@ export default async function PreLaunchPage() {
                       </Link>
 
                       <div className="flex flex-1 flex-col p-6">
-                        {/* Teaser — always public */}
+                        {/* Teaser: always public */}
                         <h2 className="font-serif text-[21px] text-maroon-900">
                           <Link href={`/projects/${project.slug}`} className="hover:text-maroon-500">
                             {project.title}
