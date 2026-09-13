@@ -86,6 +86,10 @@
   .prose-brand strong {
     @apply font-semibold text-maroon-900;
   }
+
+  .prose-brand a {
+    @apply font-medium text-maroon-700 underline decoration-gold-500/50 underline-offset-2 transition-colors hover:text-maroon-500 hover:decoration-gold-500;
+  }
 }
 
 @layer utilities {

@@ -34,6 +34,8 @@ Supplied 12 September 2026, already in place:
 - [ ] **Confirm the office PIN code.** The message said 203207, but the Google Maps listing for MUVS Realty says **201318** and adds "Patwari". The site uses 201318. Please confirm which is right, since it goes on the contact page and into the search listing.
 - [ ] **Confirm the biographies read the way you want.** They were lightly edited for punctuation, spelling and house style. The wording and every claim in them is unchanged.
 - [ ] **A pull quote for each director.** One or two lines in their own words about how they work with clients. Optional.
+- [ ] **Have the privacy policy checked.** There is now a privacy policy at /privacy, written from what the website actually does with data. It was not written by a lawyer, so please have someone review it against the DPDP Act 2023 before launch.
+- [ ] **Name a contact for privacy questions.** The policy currently points people at the main office email and phone. If a specific person should handle data requests and complaints, send their name and contact details.
 - [ ] **Confirm the legal entity name.** The LinkedIn page says "MUVS Realty LLP". If the registered name should appear in the footer, please confirm the exact form.
 
 ---

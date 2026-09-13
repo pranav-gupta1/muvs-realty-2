@@ -128,6 +128,12 @@ export function Footer({ settings }: { settings: ResolvedSettings }) {
           <div className="flex flex-col gap-3 text-xs text-cream-50/55 sm:flex-row sm:items-center sm:justify-between">
             <p>
               © {year} {settings.companyName}. All rights reserved.
+              <Link
+                href="/privacy"
+                className="ml-3 border-l border-cream-50/20 pl-3 transition-colors hover:text-gold-200"
+              >
+                Privacy Policy
+              </Link>
             </p>
             {/* Displayed on every page, as required for a registered agent. */}
             {contact.reraNumber ? (

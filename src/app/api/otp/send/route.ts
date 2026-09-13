@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { randomUUID } from 'node:crypto'
 import { otpSendSchema } from '@/lib/validators'
-import { issueOtp } from '@/lib/otp/service'
+import { issueOtp, pruneExpiredChallenges } from '@/lib/otp/service'
 import { clientIp, rateLimit } from '@/lib/rate-limit'
 import { maskPhone } from '@/lib/phone'
 import { env } from '@/lib/env'
@@ -64,6 +64,12 @@ export async function POST(request: Request) {
       { status: 429, headers: { 'retry-after': String(limit.retryAfterSeconds) } },
     )
   }
+
+  // Housekeeping, best effort: drop verification records that expired over a
+  // day ago, so they are not kept longer than the privacy policy states.
+  void pruneExpiredChallenges().catch((error) => {
+    console.warn('[otp] pruning expired challenges failed:', error)
+  })
 
   const result = await issueOtp({ phone: phoneE164, ip })
 
